@@ -1,4 +1,6 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using EducationCore.Data.Entities;
+using EducationCore.Data.FluentAPI;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +13,14 @@ namespace EducationCore.Data.Entity_Framework
     {
         public EducationDbContext(DbContextOptions<EducationDbContext> options) : base(options)
         {
+        }
+
+        public DbSet<Course> Courses { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            modelBuilder.ApplyConfiguration(new CourseFluentConfig());
+            base.OnModelCreating(modelBuilder);
         }
     }
 }
