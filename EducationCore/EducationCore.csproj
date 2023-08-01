@@ -7,6 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
     <PackageReference Include="IdentityServer4.AccessTokenValidation" Version="3.0.1" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="6.0.20" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="6.0.20" />
@@ -18,6 +19,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\EducationCore.Application.Contracts\EducationCore.Application.Contracts.csproj" />
+    <ProjectReference Include="..\EducationCore.Application\EducationCore.Application.csproj" />
     <ProjectReference Include="..\EducationCore.Data\EducationCore.Data.csproj" />
   </ItemGroup>
 

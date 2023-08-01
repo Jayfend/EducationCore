@@ -5,6 +5,13 @@ namespace IdentityServer
 {
     public class Config
     {
+        public static IEnumerable<IdentityResource> IdentityResources =>
+        new List<IdentityResource>
+        {
+            new IdentityResources.OpenId(),
+            new IdentityResources.Profile()
+        };
+
         public static IEnumerable<IdentityResource> GetIdentityResources()
         {
             return new List<IdentityResource>
@@ -15,13 +22,13 @@ namespace IdentityServer
         }
 
         public static IEnumerable<ApiScope> ApiScopes =>
-           new[] { new ApiScope("api1"), };
+           new[] { new ApiScope("api1") };
 
         public static IEnumerable<ApiResource> GetApis()
         {
             return new List<ApiResource>
         {
-            new ApiResource("api1", "My API")
+            new ApiResource("api1", "My API"){}
         };
         }
 

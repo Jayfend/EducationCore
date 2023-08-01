@@ -1,10 +1,17 @@
 using IdentityServer;
 using IdentityServer.Data;
+using IdentityServer.Services.Clients;
+using IdentityServer.Services.Profiles;
 using IdentityServer.Services.User;
+using IdentityServer4.AspNetIdentity;
 using IdentityServer4.EntityFramework.DbContexts;
+using IdentityServer4.EntityFramework.Entities;
 using IdentityServer4.EntityFramework.Mappers;
+using IdentityServer4.Models;
+using IdentityServer4.Services;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.OpenApi.Models;
 using System.Reflection;
 
@@ -17,9 +24,20 @@ var defaultConnectionString = builder.Configuration.GetConnectionString("Default
 builder.Services.AddDbContext<AspNetIdentityDbContext>(options =>
     options.UseSqlServer(defaultConnectionString,
          b => b.MigrationsAssembly(assembly)));
+
+#region Services
+
 builder.Services.AddTransient<IUserService, UserService>();
+builder.Services.AddTransient<IClientService, ClientService>();
+builder.Services.AddScoped<IProfileService, ProfileService>();
+
+#endregion Services
+
+#region System Services
+
 builder.Services.AddIdentity<IdentityUser, IdentityRole>()
-    .AddEntityFrameworkStores<AspNetIdentityDbContext>();
+    .AddEntityFrameworkStores<AspNetIdentityDbContext>()
+    .AddDefaultTokenProviders();
 builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo { Title = "Identity Server", Version = "v1" });
@@ -62,6 +80,7 @@ builder.Services.AddIdentityServer()
     {
         options.ConfigureDbContext = b => b.UseSqlServer(defaultConnectionString, opt => opt.MigrationsAssembly(assembly));
     })
+    .AddProfileService<ProfileService>()
     .AddDeveloperSigningCredential();
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 builder.Services.AddControllers();
@@ -72,53 +91,56 @@ builder.Services.AddCors(p => p.AddPolicy("corsapp", builder =>
 {
     builder.WithOrigins("*").AllowAnyMethod().AllowAnyHeader();
 }));
+
+#endregion System Services
+
 var app = builder.Build();
 
 #region Initialized Database
 
-//using (var serviceScope = app.Services.GetService<IServiceScopeFactory>()?.CreateScope())
-//{
-//    serviceScope.ServiceProvider.GetRequiredService<PersistedGrantDbContext>().Database.Migrate();
+using (var serviceScope = app.Services.GetService<IServiceScopeFactory>()?.CreateScope())
+{
+    serviceScope.ServiceProvider.GetRequiredService<PersistedGrantDbContext>().Database.Migrate();
 
-//    var context = serviceScope.ServiceProvider.GetRequiredService<ConfigurationDbContext>();
-//    context.Database.Migrate();
-//    if (!context.Clients.Any())
-//    {
-//        foreach (var client in Config.GetClients())
-//        {
-//            context.Clients.Add(client.ToEntity());
-//        }
-//        context.SaveChanges();
-//    }
+    var context = serviceScope.ServiceProvider.GetRequiredService<ConfigurationDbContext>();
+    context.Database.Migrate();
+    if (!context.Clients.Any())
+    {
+        foreach (var client in Config.GetClients())
+        {
+            context.Clients.Add(client.ToEntity());
+        }
+        context.SaveChanges();
+    }
 
-//    if (!context.IdentityResources.Any())
-//    {
-//        foreach (var resource in Config.GetIdentityResources())
-//        {
-//            context.IdentityResources.Add(resource.ToEntity());
-//        }
-//        context.SaveChanges();
-//    }
+    if (!context.IdentityResources.Any())
+    {
+        foreach (var resource in Config.GetIdentityResources())
+        {
+            context.IdentityResources.Add(resource.ToEntity());
+        }
+        context.SaveChanges();
+    }
 
-//    if (!context.ApiScopes.Any())
-//    {
-//        foreach (var resource in Config.ApiScopes.ToList())
-//        {
-//            context.ApiScopes.Add(resource.ToEntity());
-//        }
+    if (!context.ApiScopes.Any())
+    {
+        foreach (var resource in Config.ApiScopes.ToList())
+        {
+            context.ApiScopes.Add(resource.ToEntity());
+        }
 
-//        context.SaveChanges();
-//    }
+        context.SaveChanges();
+    }
 
-//    if (!context.ApiResources.Any())
-//    {
-//        foreach (var resource in Config.GetApis())
-//        {
-//            context.ApiResources.Add(resource.ToEntity());
-//        }
-//        context.SaveChanges();
-//    }
-//}
+    if (!context.ApiResources.Any())
+    {
+        foreach (var resource in Config.GetApis())
+        {
+            context.ApiResources.Add(resource.ToEntity());
+        }
+        context.SaveChanges();
+    }
+}
 
 #endregion Initialized Database
 

@@ -8,11 +8,15 @@
 
   <ItemGroup>
     <Folder Include="Business\" />
-    <Folder Include="Services\" />
   </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\EducationCore.Application.Contracts\EducationCore.Application.Contracts.csproj" />
+    <ProjectReference Include="..\EducationCore.Data\EducationCore.Data.csproj" />
   </ItemGroup>
 
 </Project>

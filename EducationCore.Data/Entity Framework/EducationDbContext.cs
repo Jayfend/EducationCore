@@ -1,5 +1,6 @@
 ﻿using EducationCore.Data.Entities;
 using EducationCore.Data.FluentAPI;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace EducationCore.Data.Entity_Framework
 {
-    public class EducationDbContext : DbContext
+    public class EducationDbContext : IdentityDbContext<User>
     {
         public EducationDbContext(DbContextOptions<EducationDbContext> options) : base(options)
         {

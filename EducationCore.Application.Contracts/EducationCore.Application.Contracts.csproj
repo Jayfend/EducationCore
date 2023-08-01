@@ -7,8 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Business\" />
-    <Folder Include="Services\" />
+    <PackageReference Include="Volo.Abp.ExceptionHandling" Version="6.0.3" />
   </ItemGroup>
 
 </Project>
