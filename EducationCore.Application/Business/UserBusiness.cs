@@ -30,7 +30,8 @@ namespace EducationCore.Application.Business
             var userByName = await _userManager.FindByNameAsync(req.UserName);
             if (userByEmail != null || userByName != null)
             {
-                throw new ExceptionHandler(ExceptionCodes.ERROR_EDCORE_ITEM_EXIST, "Tài khoản đã tồn tại");
+                //throw new ExceptionHandler(ExceptionCodes.ERROR_EDCORE_ITEM_EXIST, "Tài khoản đã tồn tại");
+                return false;
             }
             var newUser = _mapper.Map<UserCreateDTO, User>(req);
             var result = await _userManager.CreateAsync(newUser, req.Password);

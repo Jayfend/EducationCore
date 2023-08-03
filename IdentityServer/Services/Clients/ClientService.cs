@@ -31,7 +31,8 @@ namespace IdentityServer.Services.Clients
                     RedirectUris = req.RedirectUris,
                     AllowedGrantTypes = req.GrantTypes,
                     AllowedScopes = req.AllowedScopes,
-                    AllowOfflineAccess = req.AllowOfflineAccess
+                    AllowOfflineAccess = req.AllowOfflineAccess,
+                    AccessTokenLifetime = req.AccessTokenLifetime == 0 ? 3600 : req.AccessTokenLifetime
                 };
                 await _context.Clients.AddAsync(newClient.ToEntity());
                 await _context.SaveChangesAsync();

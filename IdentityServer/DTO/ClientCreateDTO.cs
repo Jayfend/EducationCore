@@ -23,5 +23,6 @@ namespace IdentityServer.DTO
 
         public List<string> RedirectUris { get; set; }
         public bool AllowOfflineAccess { get; set; }
+        public int AccessTokenLifetime { get; set; }
     }
 }
