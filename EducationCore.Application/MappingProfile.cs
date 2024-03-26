@@ -16,6 +16,7 @@ namespace EducationCore.Application
         {
             CreateMap<UserCreateDTO, User>().ReverseMap();
             CreateMap<User, UserInfoDTO>().ReverseMap();
+            CreateMap<UserCreateDTO, IdentityUserCreateReqDTO>().ReverseMap();
         }
     }
 }

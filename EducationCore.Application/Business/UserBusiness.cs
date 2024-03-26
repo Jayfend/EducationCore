@@ -1,10 +1,15 @@
 ﻿using AutoMapper;
 using EducationCore.Application.Contracts.Business;
+using EducationCore.Application.Contracts.Configurations;
 using EducationCore.Application.Contracts.DTO;
 using EducationCore.Application.Contracts.Exceptions;
+using EducationCore.Application.Contracts.Utilities;
+using EducationCore.Application.Utilities;
 using EducationCore.Data.Entities;
 using EducationCore.Data.Entity_Framework;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.Extensions.Options;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,10 +23,15 @@ namespace EducationCore.Application.Business
         private readonly UserManager<User> _userManager;
         private readonly IMapper _mapper;
 
-        public UserBusiness(UserManager<User> userManager, IMapper mapper)
+        private readonly IAPIUtil _APIUtil;
+        private readonly RemoteServiceConfig _remoteServiceConfig;
+
+        public UserBusiness(UserManager<User> userManager, IMapper mapper, IAPIUtil APIUtil, IOptions<RemoteServiceConfig> remoteServiceConfig)
         {
             _userManager = userManager;
             _mapper = mapper;
+            _APIUtil = APIUtil;
+            _remoteServiceConfig = remoteServiceConfig.Value;
         }
 
         public async Task<bool> CreateAsync(UserCreateDTO req)
@@ -34,10 +44,13 @@ namespace EducationCore.Application.Business
                 return false;
             }
             var newUser = _mapper.Map<UserCreateDTO, User>(req);
+            var requestPayload = _mapper.Map<UserCreateDTO, IdentityUserCreateReqDTO>(req);
+
             var result = await _userManager.CreateAsync(newUser, req.Password);
+
             if (result.Succeeded)
             {
-                return true;
+                return await _APIUtil.PostDataAsync<bool>($"{_remoteServiceConfig.SSO.BaseUrl}{_remoteServiceConfig.SSO.RegisterUserUrl}", JsonConvert.SerializeObject(requestPayload));
             }
             else
             {
